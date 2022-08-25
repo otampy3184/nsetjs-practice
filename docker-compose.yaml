@@ -1,0 +1,33 @@
+version: '3.7'
+services:
+  web:
+    build: .
+    container_name: nest-practice-api
+    tty: true
+    ports:
+      - '3000:3000'
+    volumes:
+      - type: bind
+        source: .
+        target: /app
+  db:
+    image: mysql:8.0.28
+    container_name: nest-practice-db
+    environment:
+      MYSQL_ROOT_HOST: '%'
+      MYSQL_ROOT_PASSWORD: '${MYSQL_ROOT_PASSWORD}'
+      MYSQL_USER: '${MYSQL_USER}'
+      MYSQL_PASSWORD: '${MYSQL_PASSWORD}'
+      MYSQL_DATABASE: '${MYSQL_DATABASE}'
+      TZ: Asia/Tokyo
+    ports:
+      - '${MYSQL_PORT}:3306'
+    volumes:
+      # ホスト:コンテナ
+      # 初期データを投入するSQLが格納されているdir
+      - ./docker/db/sql:/docker-entrypoint-initdb.d
+      # DBのデータの実体
+      - ./docker/db/mysql:/var/lib/mysql
+      # 設定ファイル
+      - ./docker/db/my.cnf:/etc/mysql/my.cnf
+      - ./mysql-files:/var/lib/mysql-files
